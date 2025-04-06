@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 using Technologies.Database;
 using Technologies.Dto;
 using Technologies.Models;
@@ -8,6 +8,7 @@ namespace Technologies.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[SwaggerTag("Operations related to plants")]
 public class PlantsController : ControllerBase
 {
     private readonly IRepository<Plant> _repository;
@@ -18,7 +19,7 @@ public class PlantsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Plant>))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Plant[]))]
     public async Task<ActionResult<Plant[]>> GetAllPlants()
     {
         var result = await _repository.GetArrayAsync();
@@ -59,6 +60,7 @@ public class PlantsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult> UpdatePlant([FromRoute] long id, [FromBody] PlantDto plant)
     {
         await _repository.ExecuteUpdateAsync(
@@ -78,10 +80,11 @@ public class PlantsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> DeletePlant([FromRoute] long id)
     {
         await _repository.RemoveAsync(x => x.Id == id);
 
-        return Ok();
+        return NoContent();
     }
 }
